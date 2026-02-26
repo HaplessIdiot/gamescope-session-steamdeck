@@ -8,7 +8,8 @@ URL:            https://github.com/ValveSoftware/gamescope
 
 Requires:       gamescope
 Requires:       steam
-
+Requires:       xrandr
+Requires:       xinput
 BuildArch:      noarch
 
 %description
@@ -24,18 +25,12 @@ selectable session in SDDM or any X11 session manager.
 install -Dm755 /dev/null %{buildroot}/usr/bin/gamescope-steam-session
 cat > %{buildroot}/usr/bin/gamescope-steam-session << 'EOF'
 #!/bin/bash
-
-# Launch gamescope at native Steam Deck resolution
-/usr/bin/gamescope -W 1280 -H 800 -f --steam -- steam -gamepadui &
-
-# Rotation + touchscreen matrix fix for Steam Deck
-(
-    sleep 2
-    xrandr --output eDP-1 --rotate right
-    xinput set-prop "FTS3528:00 2808:1015" "Coordinate Transformation Matrix" 0 1 0 -1 0 1 0 0 1
-) &
-
-wait
+# rotate the x session with xrandr BEFORE launching gamescope to not confuse where screen center is
+xrandr --output eDP-1 --rotate right
+xinput set-prop "FTS3528:00 2808:1015" "Coordinate Transformation Matrix" 0 1 0 -1 0 1 0 0 1
+# launch gamescope at native Steam Deck res with a delay to avoid race condition with gamescope unfortunately rotating takes a bit
+sleep 2
+exec /usr/bin/gamescope -W 1280 -H 800 --integer-scaling -f --steam -- steam -gamepadui
 EOF
 
 # Desktop session file
