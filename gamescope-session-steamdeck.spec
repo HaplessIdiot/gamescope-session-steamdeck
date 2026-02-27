@@ -30,7 +30,8 @@ xrandr --output eDP-1 --rotate right
 xinput set-prop "FTS3528:00 2808:1015" "Coordinate Transformation Matrix" 0 1 0 -1 0 1 0 0 1
 # launch gamescope at native Steam Deck res with a delay to avoid race condition with gamescope unfortunately rotating takes a bit
 sleep 2
-exec /usr/bin/gamescope -W 1280 -H 800 --integer-scaling -f --steam -- steam -gamepadui
+/usr/bin/gamescope -W 1280 -H 800 --integer-scaling -f --steam -- steam -gamepadui
+wait
 EOF
 
 # Desktop session file
